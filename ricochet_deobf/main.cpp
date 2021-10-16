@@ -87,7 +87,7 @@ int main()
                     std::string import_name = driver_in_memory->import_by_rva(*(DWORD*)(address + relative)); //Resolve import name
                     printf("%s -> %s\n", buffer, import_name.c_str());
                 }
-                                    offset += instruction.length;
+                offset += instruction.length;
                 break;
             }
             case 0xE8: { //Call resolve rva
