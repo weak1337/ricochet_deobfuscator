@@ -51,6 +51,7 @@ int main()
             ZydisFormatterFormatInstruction(&formatter, &instruction, buffer, sizeof(buffer),
                 base + rel_func_to_deobfuscate + offset);
             BYTE current = *(BYTE*)(base + rel_func_to_deobfuscate + offset);
+
             /*
                 Check opcode
             */
@@ -58,7 +59,7 @@ int main()
             case 0xE9: { //Jump -> combine control flow
                 uintptr_t destination = base + rel_func_to_deobfuscate + offset + *(signed int*)(base + rel_func_to_deobfuscate + offset + 1) + 5;
                 rel_func_to_deobfuscate = destination - base;
-                offset = 0x0;       
+                offset = 0x0;     
                 break;
             }
             case 0xC3: { //Return
@@ -86,8 +87,13 @@ int main()
                     DWORD relative = *(DWORD*)(address + 2) + 6;
                     std::string import_name = driver_in_memory->import_by_rva(*(DWORD*)(address + relative)); //Resolve import name
                     printf("%s -> %s\n", buffer, import_name.c_str());
+                    offset += instruction.length;
                 }
-                offset += instruction.length;
+                else {
+                    printf("%016" PRIX64 " -> ", base + rel_func_to_deobfuscate + offset);
+                    printf("%s\n");
+                    offset += instruction.length;
+                }
                 break;
             }
             case 0xE8: { //Call resolve rva
@@ -116,8 +122,15 @@ int main()
                     uintptr_t destination = base + rel_func_to_deobfuscate + offset + *(signed int*)(base + rel_func_to_deobfuscate + offset + 2) + 6;
                     printf("%016" PRIX64 " -> ", base + rel_func_to_deobfuscate + offset);
                     printf("%s (%x)\n", buffer, destination - base);
+                    offset += instruction.length;
                 }
-                offset += instruction.length;
+                else //Rdstc
+                {
+                    printf("%016" PRIX64 " -> ", base + rel_func_to_deobfuscate + offset);
+                    printf("%s\n", buffer);
+                    offset += instruction.length;
+
+                }
                 break;
             }
             default: {
