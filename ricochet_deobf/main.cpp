@@ -86,8 +86,8 @@ int main()
                     DWORD relative = *(DWORD*)(address + 2) + 6;
                     std::string import_name = driver_in_memory->import_by_rva(*(DWORD*)(address + relative)); //Resolve import name
                     printf("%s -> %s\n", buffer, import_name.c_str());
-                    offset += instruction.length;
                 }
+                                    offset += instruction.length;
                 break;
             }
             case 0xE8: { //Call resolve rva
@@ -116,8 +116,8 @@ int main()
                     uintptr_t destination = base + rel_func_to_deobfuscate + offset + *(signed int*)(base + rel_func_to_deobfuscate + offset + 2) + 6;
                     printf("%016" PRIX64 " -> ", base + rel_func_to_deobfuscate + offset);
                     printf("%s (%x)\n", buffer, destination - base);
-                    offset += instruction.length;
                 }
+                offset += instruction.length;
                 break;
             }
             default: {
